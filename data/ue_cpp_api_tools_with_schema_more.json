@@ -1,0 +1,5748 @@
+[
+  {
+    "_comment": "=== EDITOR / LEVEL MANAGEMENT ==="
+  },
+  {
+    "name": "editor.open_level",
+    "description": "Open a map/level asset in the editor (loads the world).",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "map_path": {
+          "type": "string",
+          "description": "Map asset path (e.g. /Game/Maps/MyMap)."
+        }
+      },
+      "required": [
+        "map_path"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "editor.save_level",
+    "description": "Save the currently loaded level or a specific level.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "map_path": {
+          "type": "string",
+          "description": "Optional map asset path. Omit to save current."
+        },
+        "only_dirty": {
+          "type": "boolean",
+          "default": true,
+          "description": "Save only dirty packages."
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "editor.new_level",
+    "description": "Create a new empty level asset.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "asset_path": {
+          "type": "string",
+          "description": "Content folder path (e.g. /Game/Maps)."
+        },
+        "asset_name": {
+          "type": "string",
+          "description": "New level name."
+        },
+        "template": {
+          "type": "string",
+          "enum": [
+            "empty",
+            "basic",
+            "open_world"
+          ],
+          "default": "empty"
+        }
+      },
+      "required": [
+        "asset_path",
+        "asset_name"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "editor.set_editor_camera",
+    "description": "Set the editor viewport camera transform.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "location": {
+          "type": "object",
+          "description": "Camera location",
+          "properties": {
+            "x": {
+              "type": "number"
+            },
+            "y": {
+              "type": "number"
+            },
+            "z": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "x",
+            "y",
+            "z"
+          ],
+          "additionalProperties": false
+        },
+        "rotation": {
+          "type": "object",
+          "description": "Camera rotation",
+          "properties": {
+            "pitch": {
+              "type": "number"
+            },
+            "yaw": {
+              "type": "number"
+            },
+            "roll": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "pitch",
+            "yaw",
+            "roll"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "location",
+        "rotation"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "editor.get_editor_camera",
+    "description": "Get the editor viewport camera transform.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "editor.set_game_view",
+    "description": "Toggle Game View in editor viewport.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable Game View."
+        }
+      },
+      "required": [
+        "enabled"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "editor.focus_selection",
+    "description": "Focus editor camera on selected actors.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "padding": {
+          "type": "number",
+          "default": 1.2,
+          "description": "Framing padding multiplier."
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "editor.begin_transaction",
+    "description": "Begin an undo/redo transaction (scoped changes).",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "description"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "editor.end_transaction",
+    "description": "End the current transaction.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "editor.redo",
+    "description": "Redo last undone editor action.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "_comment": "=== SELECTION / ACTOR UTILITIES ==="
+  },
+  {
+    "name": "selection.get_selected_actors",
+    "description": "Return selected actors in the editor.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "selection.select_by_tag",
+    "description": "Select actors by tag.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string"
+        },
+        "append": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "required": [
+        "tag"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "selection.select_by_class",
+    "description": "Select actors by class.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "class_name": {
+          "type": "string"
+        },
+        "append": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "required": [
+        "class_name"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "actor.rename_label",
+    "description": "Rename an actor label in the level.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "actor": {
+          "type": "string"
+        },
+        "new_label": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "actor",
+        "new_label"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "actor.duplicate_actor",
+    "description": "Duplicate an actor in the level.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "actor": {
+          "type": "string"
+        },
+        "new_label": {
+          "type": "string"
+        },
+        "offset": {
+          "type": "object",
+          "description": "World offset",
+          "properties": {
+            "x": {
+              "type": "number"
+            },
+            "y": {
+              "type": "number"
+            },
+            "z": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "x",
+            "y",
+            "z"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "actor"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "actor.set_transform",
+    "description": "Set an actor world transform.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "actor": {
+          "type": "string"
+        },
+        "location": {
+          "type": "object",
+          "description": "World location",
+          "properties": {
+            "x": {
+              "type": "number"
+            },
+            "y": {
+              "type": "number"
+            },
+            "z": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "x",
+            "y",
+            "z"
+          ],
+          "additionalProperties": false
+        },
+        "rotation": {
+          "type": "object",
+          "description": "Rotation (degrees)",
+          "properties": {
+            "pitch": {
+              "type": "number"
+            },
+            "yaw": {
+              "type": "number"
+            },
+            "roll": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "pitch",
+            "yaw",
+            "roll"
+          ],
+          "additionalProperties": false
+        },
+        "scale": {
+          "type": "object",
+          "description": "World scale",
+          "properties": {
+            "x": {
+              "type": "number"
+            },
+            "y": {
+              "type": "number"
+            },
+            "z": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "x",
+            "y",
+            "z"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "actor"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "actor.attach_to",
+    "description": "Attach one actor to another.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "child": {
+          "type": "string"
+        },
+        "parent": {
+          "type": "string"
+        },
+        "socket": {
+          "type": "string"
+        },
+        "keep_world": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [
+        "child",
+        "parent"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "actor.set_folder",
+    "description": "Set actor folder path in World Outliner.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "actor": {
+          "type": "string"
+        },
+        "folder": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "actor",
+        "folder"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "actor.set_tags",
+    "description": "Replace actor tags with provided list.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "actor": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "actor",
+        "tags"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "actor.find_by_pattern",
+    "description": "Find actors by name/label pattern.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "pattern": {
+          "type": "string"
+        },
+        "case_sensitive": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "required": [
+        "pattern"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "_comment": "=== CONTENT / ASSET REGISTRY ==="
+  },
+  {
+    "name": "content.find_assets",
+    "description": "Search assets by class, path, name pattern or tag.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "class": {
+          "type": "string"
+        },
+        "name_pattern": {
+          "type": "string"
+        },
+        "recursive": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "content.rename_asset",
+    "description": "Rename or move an asset to a new path.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "asset_path": {
+          "type": "string"
+        },
+        "new_asset_path": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "asset_path",
+        "new_asset_path"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "content.duplicate_asset",
+    "description": "Duplicate an asset to a new path.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "asset_path": {
+          "type": "string"
+        },
+        "duplicate_path": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "asset_path",
+        "duplicate_path"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "content.delete_assets",
+    "description": "Delete assets (safe delete with references check).",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "asset_paths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "force": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "required": [
+        "asset_paths"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "content.fixup_redirectors",
+    "description": "Fix up redirectors in a content folder.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "root_path": {
+          "type": "string"
+        },
+        "recursive": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [
+        "root_path"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "content.sync_browser_to",
+    "description": "Sync Content Browser to given asset(s).",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "asset_paths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "asset_paths"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "content.set_metadata_tags",
+    "description": "Set custom metadata tags on an asset.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "asset_path": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "object",
+          "description": "string->string map"
+        }
+      },
+      "required": [
+        "asset_path",
+        "tags"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "content.list_referencers",
+    "description": "List assets that reference a given asset.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "asset_path": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "asset_path"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "content.list_dependencies",
+    "description": "List assets that a given asset depends on.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "asset_path": {
+          "type": "string"
+        },
+        "hard_only": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "required": [
+        "asset_path"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "content.bulk_move_root",
+    "description": "Bulk move assets to a new root while preserving relative paths.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "source_root": {
+          "type": "string"
+        },
+        "target_root": {
+          "type": "string"
+        },
+        "class_filter": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "source_root",
+        "target_root"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "_comment": "=== MATERIALS / SHADERS ==="
+  },
+  {
+    "name": "material.create",
+    "description": "Create a new Material asset.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "asset_path": {
+          "type": "string"
+        },
+        "asset_name": {
+          "type": "string"
+        },
+        "shading_model": {
+          "type": "string",
+          "enum": [
+            "default_lit",
+            "unlit",
+            "subsurface",
+            "clear_coat",
+            "hair",
+            "cloth",
+            "single_layer_water"
+          ],
+          "default": "default_lit"
+        }
+      },
+      "required": [
+        "asset_path",
+        "asset_name"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "material.create_instance",
+    "description": "Create a new Material Instance asset from a parent.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "asset_path": {
+          "type": "string"
+        },
+        "asset_name": {
+          "type": "string"
+        },
+        "parent_material": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "asset_path",
+        "asset_name",
+        "parent_material"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "material.instance_set_scalar",
+    "description": "Set scalar parameter on a Material Instance.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "material_instance": {
+          "type": "string"
+        },
+        "param_name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "material_instance",
+        "param_name",
+        "value"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "material.instance_set_vector",
+    "description": "Set vector (color) parameter on a Material Instance.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "material_instance": {
+          "type": "string"
+        },
+        "param_name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "object",
+          "description": "Color RGBA 0-1",
+          "properties": {
+            "r": {
+              "type": "number"
+            },
+            "g": {
+              "type": "number"
+            },
+            "b": {
+              "type": "number"
+            },
+            "a": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "r",
+            "g",
+            "b",
+            "a"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "material_instance",
+        "param_name",
+        "value"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "material.instance_set_texture",
+    "description": "Set texture parameter on a Material Instance.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "material_instance": {
+          "type": "string"
+        },
+        "param_name": {
+          "type": "string"
+        },
+        "texture": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "material_instance",
+        "param_name",
+        "texture"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "material.recompile",
+    "description": "Recompile a material or all materials.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "asset_path": {
+          "type": "string"
+        },
+        "force": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "shader.flush_cache",
+    "description": "Flush derived shader cache (forces recompilation next use).",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "scope": {
+          "type": "string",
+          "enum": [
+            "global",
+            "project"
+          ],
+          "default": "project"
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "shader.set_compile_jobs_limit",
+    "description": "Set editor shader compile job limit.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "max_jobs": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "max_jobs"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "material.open_editor",
+    "description": "Open a material or material instance in the editor.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "asset_path": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "asset_path"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "material.audit_parameters",
+    "description": "List all exposed parameters on a material instance (names/types/defaults).",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "material_instance": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "material_instance"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "_comment": "=== TEXTURES / VIRTUAL TEXTURES ==="
+  },
+  {
+    "name": "texture.import",
+    "description": "Import an image file as a Texture2D.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "source_file": {
+          "type": "string"
+        },
+        "destination_path": {
+          "type": "string"
+        },
+        "asset_name": {
+          "type": "string"
+        },
+        "sRGB": {
+          "type": "boolean",
+          "default": true
+        },
+        "compression": {
+          "type": "string",
+          "enum": [
+            "default",
+            "normalmap",
+            "masks",
+            "hdr",
+            "grayscale"
+          ],
+          "default": "default"
+        }
+      },
+      "required": [
+        "source_file",
+        "destination_path",
+        "asset_name"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "texture.set_settings",
+    "description": "Set common texture settings.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "texture": {
+          "type": "string"
+        },
+        "mip_gen": {
+          "type": "string",
+          "enum": [
+            "from_texture_group",
+            "no_mipmaps",
+            "simple_average",
+            "sharpen0",
+            "sharpen5",
+            "sharpen10"
+          ],
+          "default": "from_texture_group"
+        },
+        "lod_group": {
+          "type": "string"
+        },
+        "filter": {
+          "type": "string",
+          "enum": [
+            "default",
+            "nearest",
+            "bilinear",
+            "trilinear",
+            "anisotropic"
+          ],
+          "default": "default"
+        },
+        "max_size": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "texture"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "texture.create_render_target",
+    "description": "Create a TextureRenderTarget2D asset.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "asset_path": {
+          "type": "string"
+        },
+        "asset_name": {
+          "type": "string"
+        },
+        "width": {
+          "type": "integer"
+        },
+        "height": {
+          "type": "integer"
+        },
+        "format": {
+          "type": "string",
+          "enum": [
+            "rgba8",
+            "rgba16f",
+            "r32f"
+          ],
+          "default": "rgba16f"
+        }
+      },
+      "required": [
+        "asset_path",
+        "asset_name",
+        "width",
+        "height"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "virtualtexture.enable",
+    "description": "Enable virtual texturing for a texture.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "texture": {
+          "type": "string"
+        },
+        "enable": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [
+        "texture"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "virtualtexture.set_tile_size",
+    "description": "Configure VT tile size and border.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "texture": {
+          "type": "string"
+        },
+        "tile_size": {
+          "type": "integer",
+          "enum": [
+            64,
+            128,
+            256
+          ]
+        },
+        "border_size": {
+          "type": "integer",
+          "enum": [
+            2,
+            4
+          ]
+        }
+      },
+      "required": [
+        "texture",
+        "tile_size",
+        "border_size"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "texture.regenerate_mips",
+    "description": "Regenerate mipmaps for a texture.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "texture": {
+          "type": "string"
+        },
+        "sharpen": {
+          "type": "integer",
+          "default": 0
+        }
+      },
+      "required": [
+        "texture"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "texture.open_editor",
+    "description": "Open a texture asset in the editor.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "asset_path": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "asset_path"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "texture.audit_memory",
+    "description": "Estimate texture memory cost and streaming behavior.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "texture": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "texture"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "texture.set_lod_bias",
+    "description": "Set LOD bias (drop top mips) for a texture.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "texture": {
+          "type": "string"
+        },
+        "lod_bias": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "texture",
+        "lod_bias"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "texture.set_address_mode",
+    "description": "Set texture addressing mode (wrap/clamp/mirror).",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "texture": {
+          "type": "string"
+        },
+        "address_x": {
+          "type": "string",
+          "enum": [
+            "wrap",
+            "clamp",
+            "mirror"
+          ],
+          "default": "wrap"
+        },
+        "address_y": {
+          "type": "string",
+          "enum": [
+            "wrap",
+            "clamp",
+            "mirror"
+          ],
+          "default": "wrap"
+        }
+      },
+      "required": [
+        "texture"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "_comment": "=== STATIC MESH / NANITE / LODS ==="
+  },
+  {
+    "name": "staticmesh.generate_lods",
+    "description": "Generate LODs for a Static Mesh using reduction settings.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "mesh": {
+          "type": "string"
+        },
+        "lod_count": {
+          "type": "integer"
+        },
+        "screen_sizes": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "reduction_percentages": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        }
+      },
+      "required": [
+        "mesh",
+        "lod_count"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "staticmesh.set_collision",
+    "description": "Configure collision for a Static Mesh.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "mesh": {
+          "type": "string"
+        },
+        "collision_type": {
+          "type": "string",
+          "enum": [
+            "none",
+            "simple",
+            "complex_as_simple",
+            "simple_and_complex"
+          ],
+          "default": "simple"
+        },
+        "auto_convex": {
+          "type": "boolean",
+          "default": false
+        },
+        "hull_count": {
+          "type": "integer",
+          "default": 8
+        },
+        "max_hull_verts": {
+          "type": "integer",
+          "default": 16
+        }
+      },
+      "required": [
+        "mesh"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "staticmesh.enable_nanite",
+    "description": "Enable Nanite on a Static Mesh.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "mesh": {
+          "type": "string"
+        },
+        "enable": {
+          "type": "boolean",
+          "default": true
+        },
+        "fallback_percent_triangles": {
+          "type": "number",
+          "default": 1.0
+        }
+      },
+      "required": [
+        "mesh"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "staticmesh.set_nanite_settings",
+    "description": "Set Nanite advanced settings.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "mesh": {
+          "type": "string"
+        },
+        "position_precision": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "high",
+            "medium",
+            "low"
+          ],
+          "default": "auto"
+        },
+        "keep_percent_triangles": {
+          "type": "number",
+          "default": 1.0
+        },
+        "trim_relative_error": {
+          "type": "number",
+          "default": 0.0
+        }
+      },
+      "required": [
+        "mesh"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "staticmesh.rebuild",
+    "description": "Rebuild a Static Mesh (render/collision data).",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "mesh": {
+          "type": "string"
+        },
+        "recompute_normals": {
+          "type": "boolean",
+          "default": false
+        },
+        "recompute_tangents": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "required": [
+        "mesh"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "staticmesh.set_lightmap",
+    "description": "Set lightmap UV channel and resolution.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "mesh": {
+          "type": "string"
+        },
+        "lightmap_uv_channel": {
+          "type": "integer",
+          "default": 1
+        },
+        "lightmap_resolution": {
+          "type": "integer",
+          "default": 256
+        }
+      },
+      "required": [
+        "mesh"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "staticmesh.merge_actors",
+    "description": "Merge multiple mesh actors into one new Static Mesh asset.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "actors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "asset_path": {
+          "type": "string"
+        },
+        "asset_name": {
+          "type": "string"
+        },
+        "pivot_mode": {
+          "type": "string",
+          "enum": [
+            "center",
+            "first_actor",
+            "world_origin"
+          ],
+          "default": "center"
+        }
+      },
+      "required": [
+        "actors",
+        "asset_path",
+        "asset_name"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "staticmesh.audit",
+    "description": "Audit mesh stats (tris, verts, LODs, Nanite, collision).",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "mesh": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "mesh"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "staticmesh.open_editor",
+    "description": "Open Static Mesh in editor.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "asset_path": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "asset_path"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "staticmesh.set_section_material",
+    "description": "Assign material to a specific mesh section.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "mesh": {
+          "type": "string"
+        },
+        "lod_index": {
+          "type": "integer",
+          "default": 0
+        },
+        "section_index": {
+          "type": "integer"
+        },
+        "material": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "mesh",
+        "section_index",
+        "material"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "_comment": "=== SKELETAL MESH / ANIMATION ==="
+  },
+  {
+    "name": "skeletalmesh.import",
+    "description": "Import skeletal mesh from FBX/GLTF.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "source_file": {
+          "type": "string"
+        },
+        "destination_path": {
+          "type": "string"
+        },
+        "asset_name": {
+          "type": "string"
+        },
+        "skeleton": {
+          "type": "string"
+        },
+        "import_morph_targets": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "required": [
+        "source_file",
+        "destination_path",
+        "asset_name"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "skeleton.create_from_mesh",
+    "description": "Create a new Skeleton asset from a Skeletal Mesh.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "skeletal_mesh": {
+          "type": "string"
+        },
+        "asset_path": {
+          "type": "string"
+        },
+        "asset_name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "skeletal_mesh",
+        "asset_path",
+        "asset_name"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "animation.create_sequence",
+    "description": "Create an AnimSequence asset placeholder.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "asset_path": {
+          "type": "string"
+        },
+        "asset_name": {
+          "type": "string"
+        },
+        "skeleton": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "asset_path",
+        "asset_name",
+        "skeleton"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "animation.add_notifies",
+    "description": "Add AnimNotifies to an AnimSequence.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "anim_sequence": {
+          "type": "string"
+        },
+        "notifies": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "time": {
+                "type": "number"
+              },
+              "class": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "time"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "anim_sequence",
+        "notifies"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "animation.create_montage",
+    "description": "Create an AnimMontage from sequences.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "asset_path": {
+          "type": "string"
+        },
+        "asset_name": {
+          "type": "string"
+        },
+        "skeleton": {
+          "type": "string"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "sequence": {
+                "type": "string"
+              },
+              "start_time": {
+                "type": "number",
+                "default": 0.0
+              },
+              "play_rate": {
+                "type": "number",
+                "default": 1.0
+              }
+            },
+            "required": [
+              "sequence"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "asset_path",
+        "asset_name",
+        "skeleton",
+        "segments"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "animation.set_root_motion",
+    "description": "Configure root motion extraction on an AnimSequence.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "anim_sequence": {
+          "type": "string"
+        },
+        "enable_root_motion": {
+          "type": "boolean",
+          "default": true
+        },
+        "root_lock": {
+          "type": "string",
+          "enum": [
+            "ref_pose",
+            "anim_first_frame",
+            "zero"
+          ],
+          "default": "anim_first_frame"
+        }
+      },
+      "required": [
+        "anim_sequence"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "animation.compress",
+    "description": "Run animation compression on an AnimSequence.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "anim_sequence": {
+          "type": "string"
+        },
+        "codec": {
+          "type": "string",
+          "enum": [
+            "automatic",
+            "acl",
+            "per_track",
+            "remove_every_second_key"
+          ],
+          "default": "automatic"
+        },
+        "error_threshold": {
+          "type": "number",
+          "default": 0.1
+        }
+      },
+      "required": [
+        "anim_sequence"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "animation.retarget_legacy",
+    "description": "Retarget an animation asset (legacy).",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "asset": {
+          "type": "string"
+        },
+        "target_skeleton": {
+          "type": "string"
+        },
+        "duplicate_path": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "asset",
+        "target_skeleton",
+        "duplicate_path"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "animation.open_editor",
+    "description": "Open an animation asset in editor.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "asset_path": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "asset_path"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "skeletalmesh.audit",
+    "description": "Audit skeletal mesh (bones, LODs, skin weights, physics asset).",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "skeletal_mesh": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "skeletal_mesh"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "_comment": "=== NIAGARA ==="
+  },
+  {
+    "name": "niagara.create_system",
+    "description": "Create a Niagara System asset.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "asset_path": {
+          "type": "string"
+        },
+        "asset_name": {
+          "type": "string"
+        },
+        "template": {
+          "type": "string",
+          "enum": [
+            "empty",
+            "sprite",
+            "mesh",
+            "gpu_sprite",
+            "beam"
+          ],
+          "default": "empty"
+        }
+      },
+      "required": [
+        "asset_path",
+        "asset_name"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "niagara.create_emitter",
+    "description": "Create a Niagara Emitter asset.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "asset_path": {
+          "type": "string"
+        },
+        "asset_name": {
+          "type": "string"
+        },
+        "template": {
+          "type": "string",
+          "enum": [
+            "empty",
+            "sprite",
+            "mesh",
+            "gpu_sprite"
+          ],
+          "default": "empty"
+        }
+      },
+      "required": [
+        "asset_path",
+        "asset_name"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "niagara.add_emitter_to_system",
+    "description": "Add an emitter to a Niagara System.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "system": {
+          "type": "string"
+        },
+        "emitter": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [
+        "system",
+        "emitter"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "niagara.set_user_param_default",
+    "description": "Set a user parameter default on a Niagara System.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "system": {
+          "type": "string"
+        },
+        "param_name": {
+          "type": "string"
+        },
+        "param_type": {
+          "type": "string",
+          "enum": [
+            "float",
+            "int32",
+            "bool",
+            "vec2",
+            "vec3",
+            "vec4",
+            "color",
+            "object"
+          ]
+        },
+        "value": {}
+      },
+      "required": [
+        "system",
+        "param_name",
+        "param_type",
+        "value"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "niagara.add_renderer",
+    "description": "Add a renderer to an emitter.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "emitter": {
+          "type": "string"
+        },
+        "renderer_type": {
+          "type": "string",
+          "enum": [
+            "sprite",
+            "mesh",
+            "ribbon"
+          ],
+          "default": "sprite"
+        },
+        "material": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "emitter",
+        "renderer_type"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "niagara.set_sim_target",
+    "description": "Set simulation target for an emitter (CPU/GPU).",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "emitter": {
+          "type": "string"
+        },
+        "target": {
+          "type": "string",
+          "enum": [
+            "cpu",
+            "gpu"
+          ],
+          "default": "cpu"
+        }
+      },
+      "required": [
+        "emitter",
+        "target"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "niagara.compile_asset",
+    "description": "Compile Niagara scripts for a system or emitter.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "asset_path": {
+          "type": "string"
+        },
+        "full_rebuild": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "required": [
+        "asset_path"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "niagara.open_editor",
+    "description": "Open Niagara asset in editor.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "asset_path": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "asset_path"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "niagara.spawn_in_level",
+    "description": "Spawn a Niagara system component in the current level.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "system": {
+          "type": "string"
+        },
+        "location": {
+          "type": "object",
+          "description": "Vector",
+          "properties": {
+            "x": {
+              "type": "number"
+            },
+            "y": {
+              "type": "number"
+            },
+            "z": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "x",
+            "y",
+            "z"
+          ],
+          "additionalProperties": false
+        },
+        "rotation": {
+          "type": "object",
+          "description": "Rotation (degrees)",
+          "properties": {
+            "pitch": {
+              "type": "number"
+            },
+            "yaw": {
+              "type": "number"
+            },
+            "roll": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "pitch",
+            "yaw",
+            "roll"
+          ],
+          "additionalProperties": false
+        },
+        "label": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "system",
+        "location",
+        "rotation"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "niagara.audit",
+    "description": "Audit Niagara asset for compile errors and missing dependencies.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "asset_path": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "asset_path"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "_comment": "=== SEQUENCER / MOVIE RENDER ==="
+  },
+  {
+    "name": "sequencer.create_level_sequence",
+    "description": "Create a Level Sequence asset.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "asset_path": {
+          "type": "string"
+        },
+        "asset_name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "asset_path",
+        "asset_name"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "sequencer.add_actor_binding",
+    "description": "Add an actor binding to a Level Sequence.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "sequence": {
+          "type": "string"
+        },
+        "actor": {
+          "type": "string"
+        },
+        "binding_name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "sequence",
+        "actor"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "sequencer.add_transform_track",
+    "description": "Add a transform track for a bound actor.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "sequence": {
+          "type": "string"
+        },
+        "binding_id": {
+          "type": "string"
+        },
+        "channel_mask": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "location",
+              "rotation",
+              "scale"
+            ]
+          },
+          "default": [
+            "location",
+            "rotation",
+            "scale"
+          ]
+        }
+      },
+      "required": [
+        "sequence",
+        "binding_id"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "sequencer.add_camera_cut_track",
+    "description": "Add camera cut track and set active camera binding.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "sequence": {
+          "type": "string"
+        },
+        "camera_binding_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "sequence",
+        "camera_binding_id"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "sequencer.add_key",
+    "description": "Add a keyframe to a track channel.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "sequence": {
+          "type": "string"
+        },
+        "binding_id": {
+          "type": "string"
+        },
+        "track_type": {
+          "type": "string",
+          "enum": [
+            "transform",
+            "float",
+            "bool",
+            "color"
+          ]
+        },
+        "channel": {
+          "type": "string"
+        },
+        "time_seconds": {
+          "type": "number"
+        },
+        "value": {}
+      },
+      "required": [
+        "sequence",
+        "binding_id",
+        "track_type",
+        "channel",
+        "time_seconds",
+        "value"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "sequencer.open_editor",
+    "description": "Open a Level Sequence in Sequencer.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "sequence": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "sequence"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "sequencer.render_movie_queue",
+    "description": "Render a Level Sequence via Movie Render Queue.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "sequence": {
+          "type": "string"
+        },
+        "preset": {
+          "type": "string"
+        },
+        "output_dir": {
+          "type": "string"
+        },
+        "file_name_format": {
+          "type": "string",
+          "default": "{sequence}_{frame}"
+        },
+        "resolution": {
+          "type": "object",
+          "properties": {
+            "x": {
+              "type": "integer"
+            },
+            "y": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "x",
+            "y"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "sequence",
+        "output_dir"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "movierender.create_preset",
+    "description": "Create a Movie Render Pipeline preset asset.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "asset_path": {
+          "type": "string"
+        },
+        "asset_name": {
+          "type": "string"
+        },
+        "output_format": {
+          "type": "string",
+          "enum": [
+            "exr",
+            "png",
+            "jpg",
+            "prores",
+            "h264"
+          ],
+          "default": "png"
+        }
+      },
+      "required": [
+        "asset_path",
+        "asset_name"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "sequencer.audit",
+    "description": "Audit a sequence for missing bindings and invalid tracks.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "sequence": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "sequence"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "movierender.set_console_vars",
+    "description": "Set console vars for render preset.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "preset": {
+          "type": "string"
+        },
+        "console_vars": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "preset",
+        "console_vars"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "_comment": "=== WORLD PARTITION / DATA LAYERS ==="
+  },
+  {
+    "name": "worldpartition.convert_level",
+    "description": "Convert a level to World Partition.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "map_path": {
+          "type": "string"
+        },
+        "enable_streaming": {
+          "type": "boolean",
+          "default": true
+        },
+        "cell_size": {
+          "type": "integer",
+          "default": 12800
+        }
+      },
+      "required": [
+        "map_path"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "worldpartition.build_hlods",
+    "description": "Build HLODs for a World Partition map.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "map_path": {
+          "type": "string"
+        },
+        "force_rebuild": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "required": [
+        "map_path"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "worldpartition.load_region",
+    "description": "Load a region in editor.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "center": {
+          "type": "object",
+          "description": "World center",
+          "properties": {
+            "x": {
+              "type": "number"
+            },
+            "y": {
+              "type": "number"
+            },
+            "z": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "x",
+            "y",
+            "z"
+          ],
+          "additionalProperties": false
+        },
+        "radius": {
+          "type": "number",
+          "default": 50000.0
+        }
+      },
+      "required": [
+        "center"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "worldpartition.unload_region",
+    "description": "Unload a region in editor.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "center": {
+          "type": "object",
+          "description": "World center",
+          "properties": {
+            "x": {
+              "type": "number"
+            },
+            "y": {
+              "type": "number"
+            },
+            "z": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "x",
+            "y",
+            "z"
+          ],
+          "additionalProperties": false
+        },
+        "radius": {
+          "type": "number",
+          "default": 50000.0
+        }
+      },
+      "required": [
+        "center"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "datalayers.create_asset",
+    "description": "Create a Data Layer asset.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "asset_path": {
+          "type": "string"
+        },
+        "asset_name": {
+          "type": "string"
+        },
+        "layer_type": {
+          "type": "string",
+          "enum": [
+            "runtime",
+            "editor"
+          ],
+          "default": "runtime"
+        }
+      },
+      "required": [
+        "asset_path",
+        "asset_name"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "datalayers.assign_actors",
+    "description": "Assign actors to a Data Layer.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "data_layer": {
+          "type": "string"
+        },
+        "actors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "data_layer",
+        "actors"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "datalayers.set_state",
+    "description": "Set Data Layer state in editor.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "data_layer": {
+          "type": "string"
+        },
+        "loaded": {
+          "type": "boolean",
+          "default": true
+        },
+        "visible": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [
+        "data_layer"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "worldpartition.validate",
+    "description": "Validate world partition map.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "map_path": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "map_path"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "worldpartition.generate_minimap",
+    "description": "Generate world partition minimap tiles.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "map_path": {
+          "type": "string"
+        },
+        "tile_size": {
+          "type": "integer",
+          "default": 2048
+        },
+        "world_units_per_pixel": {
+          "type": "number",
+          "default": 100.0
+        }
+      },
+      "required": [
+        "map_path"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "datalayers.remove_actors",
+    "description": "Remove actors from a Data Layer.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "data_layer": {
+          "type": "string"
+        },
+        "actors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "data_layer",
+        "actors"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "_comment": "=== PCG ==="
+  },
+  {
+    "name": "pcg.create_graph",
+    "description": "Create a PCG Graph asset.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "asset_path": {
+          "type": "string"
+        },
+        "asset_name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "asset_path",
+        "asset_name"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "pcg.add_component",
+    "description": "Add a PCG Component to an actor and assign a graph.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "actor": {
+          "type": "string"
+        },
+        "pcg_graph": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [
+        "actor",
+        "pcg_graph"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "pcg.set_seed",
+    "description": "Set seed on a PCG component.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "actor": {
+          "type": "string"
+        },
+        "seed": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "actor",
+        "seed"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "pcg.generate",
+    "description": "Trigger PCG generation on a component.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "actor": {
+          "type": "string"
+        },
+        "force": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [
+        "actor"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "pcg.set_bounds",
+    "description": "Set PCG generation bounds.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "actor": {
+          "type": "string"
+        },
+        "bounds_center": {
+          "type": "object",
+          "description": "Bounds center",
+          "properties": {
+            "x": {
+              "type": "number"
+            },
+            "y": {
+              "type": "number"
+            },
+            "z": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "x",
+            "y",
+            "z"
+          ],
+          "additionalProperties": false
+        },
+        "bounds_extent": {
+          "type": "object",
+          "description": "Bounds extent",
+          "properties": {
+            "x": {
+              "type": "number"
+            },
+            "y": {
+              "type": "number"
+            },
+            "z": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "x",
+            "y",
+            "z"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "actor",
+        "bounds_center",
+        "bounds_extent"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "pcg.graph_add_mesh_spawner",
+    "description": "Add a Static Mesh Spawner node to a PCG graph.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "pcg_graph": {
+          "type": "string"
+        },
+        "mesh": {
+          "type": "string"
+        },
+        "density": {
+          "type": "number",
+          "default": 1.0
+        },
+        "scale_min": {
+          "type": "number",
+          "default": 1.0
+        },
+        "scale_max": {
+          "type": "number",
+          "default": 1.0
+        }
+      },
+      "required": [
+        "pcg_graph",
+        "mesh"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "pcg.graph_add_surface_sampler",
+    "description": "Add a Surface Sampler node to a PCG graph.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "pcg_graph": {
+          "type": "string"
+        },
+        "target_actor": {
+          "type": "string"
+        },
+        "point_spacing": {
+          "type": "number",
+          "default": 200.0
+        }
+      },
+      "required": [
+        "pcg_graph",
+        "target_actor"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "pcg.open_editor",
+    "description": "Open PCG graph in editor.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "asset_path": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "asset_path"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "pcg.audit",
+    "description": "Audit PCG graph for missing references/compile issues.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "pcg_graph": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "pcg_graph"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "pcg.bake_output",
+    "description": "Bake generated PCG output to instances/actors.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "actor": {
+          "type": "string"
+        },
+        "target_folder": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "actor"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "_comment": "=== NAVIGATION / AI ==="
+  },
+  {
+    "name": "nav.build_navmesh",
+    "description": "Build navigation data for current world.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "async": {
+          "type": "boolean",
+          "default": true
+        },
+        "only_dirty": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "nav.set_recast_params",
+    "description": "Set Recast navmesh generation parameters.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "cell_size": {
+          "type": "number",
+          "default": 19.0
+        },
+        "cell_height": {
+          "type": "number",
+          "default": 10.0
+        },
+        "agent_radius": {
+          "type": "number",
+          "default": 34.0
+        },
+        "agent_height": {
+          "type": "number",
+          "default": 144.0
+        },
+        "agent_max_slope": {
+          "type": "number",
+          "default": 44.0
+        },
+        "agent_max_step_height": {
+          "type": "number",
+          "default": 35.0
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "nav.add_modifier_volume",
+    "description": "Add a NavModifierVolume.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "location": {
+          "type": "object",
+          "description": "Vector",
+          "properties": {
+            "x": {
+              "type": "number"
+            },
+            "y": {
+              "type": "number"
+            },
+            "z": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "x",
+            "y",
+            "z"
+          ],
+          "additionalProperties": false
+        },
+        "extent": {
+          "type": "object",
+          "description": "Box extent",
+          "properties": {
+            "x": {
+              "type": "number"
+            },
+            "y": {
+              "type": "number"
+            },
+            "z": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "x",
+            "y",
+            "z"
+          ],
+          "additionalProperties": false
+        },
+        "area_class": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "location",
+        "extent",
+        "area_class"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "nav.project_point",
+    "description": "Project a point to the navmesh.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "location": {
+          "type": "object",
+          "description": "Vector",
+          "properties": {
+            "x": {
+              "type": "number"
+            },
+            "y": {
+              "type": "number"
+            },
+            "z": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "x",
+            "y",
+            "z"
+          ],
+          "additionalProperties": false
+        },
+        "extent": {
+          "type": "object",
+          "description": "Search extent",
+          "properties": {
+            "x": {
+              "type": "number"
+            },
+            "y": {
+              "type": "number"
+            },
+            "z": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "x",
+            "y",
+            "z"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "location"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "nav.find_path",
+    "description": "Find a navigation path between two points.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "start": {
+          "type": "object",
+          "description": "Start",
+          "properties": {
+            "x": {
+              "type": "number"
+            },
+            "y": {
+              "type": "number"
+            },
+            "z": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "x",
+            "y",
+            "z"
+          ],
+          "additionalProperties": false
+        },
+        "end": {
+          "type": "object",
+          "description": "End",
+          "properties": {
+            "x": {
+              "type": "number"
+            },
+            "y": {
+              "type": "number"
+            },
+            "z": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "x",
+            "y",
+            "z"
+          ],
+          "additionalProperties": false
+        },
+        "filter_class": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "start",
+        "end"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "ai.spawn_controller",
+    "description": "Spawn an AIController and possess a pawn.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "pawn": {
+          "type": "string"
+        },
+        "controller_class": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "pawn",
+        "controller_class"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "ai.run_behavior_tree",
+    "description": "Run a Behavior Tree on an AIController.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "controller": {
+          "type": "string"
+        },
+        "behavior_tree": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "controller",
+        "behavior_tree"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "ai.set_blackboard_value",
+    "description": "Set a blackboard key value.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "controller": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        },
+        "value": {}
+      },
+      "required": [
+        "controller",
+        "key",
+        "value"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "ai.toggle_perception",
+    "description": "Enable/disable AIPerceptionComponent sensing.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "controller": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [
+        "controller",
+        "enabled"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "ai.debug_draw_path",
+    "description": "Draw last computed nav path.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "duration": {
+          "type": "number",
+          "default": 5.0
+        },
+        "thickness": {
+          "type": "number",
+          "default": 5.0
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "_comment": "=== UMG / UI ==="
+  },
+  {
+    "name": "umg.create_widget_blueprint",
+    "description": "Create a Widget Blueprint.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "asset_path": {
+          "type": "string"
+        },
+        "asset_name": {
+          "type": "string"
+        },
+        "parent_class": {
+          "type": "string",
+          "default": "UserWidget"
+        }
+      },
+      "required": [
+        "asset_path",
+        "asset_name"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "umg.add_widget_node",
+    "description": "Add a widget to a Widget Blueprint tree.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "widget_bp": {
+          "type": "string"
+        },
+        "widget_type": {
+          "type": "string",
+          "enum": [
+            "canvas_panel",
+            "border",
+            "image",
+            "text_block",
+            "button",
+            "vertical_box",
+            "horizontal_box",
+            "overlay",
+            "size_box"
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "parent_name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "widget_bp",
+        "widget_type",
+        "name"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "umg.set_widget_property",
+    "description": "Set a widget property.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "widget_bp": {
+          "type": "string"
+        },
+        "widget_name": {
+          "type": "string"
+        },
+        "property": {
+          "type": "string"
+        },
+        "value": {}
+      },
+      "required": [
+        "widget_bp",
+        "widget_name",
+        "property",
+        "value"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "umg.bind_property",
+    "description": "Bind a widget property to a function.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "widget_bp": {
+          "type": "string"
+        },
+        "widget_name": {
+          "type": "string"
+        },
+        "property": {
+          "type": "string"
+        },
+        "binding_function": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "widget_bp",
+        "widget_name",
+        "property",
+        "binding_function"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "umg.add_animation",
+    "description": "Create a UMG animation track.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "widget_bp": {
+          "type": "string"
+        },
+        "animation_name": {
+          "type": "string"
+        },
+        "widget_name": {
+          "type": "string"
+        },
+        "property": {
+          "type": "string",
+          "enum": [
+            "render_opacity",
+            "translation",
+            "scale",
+            "rotation"
+          ]
+        }
+      },
+      "required": [
+        "widget_bp",
+        "animation_name",
+        "widget_name",
+        "property"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "umg.open_editor",
+    "description": "Open Widget Blueprint in editor.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "asset_path": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "asset_path"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "umg.audit",
+    "description": "Audit widget blueprint for broken bindings.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "widget_bp": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "widget_bp"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "hud.add_to_viewport",
+    "description": "Add a widget class to viewport (runtime).",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "widget_class": {
+          "type": "string"
+        },
+        "z_order": {
+          "type": "integer",
+          "default": 0
+        }
+      },
+      "required": [
+        "widget_class"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "hud.remove_from_viewport",
+    "description": "Remove a widget instance from viewport.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "widget_name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "widget_name"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "ui.set_input_mode",
+    "description": "Set player input mode and cursor visibility.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "game_only",
+            "ui_only",
+            "game_and_ui"
+          ],
+          "default": "game_and_ui"
+        },
+        "show_cursor": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "_comment": "=== GAMEPLAY TAGS / DATA ==="
+  },
+  {
+    "name": "gameplaytags.add_tag",
+    "description": "Add a gameplay tag.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string"
+        },
+        "comment": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "tag"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "gameplaytags.remove_tag",
+    "description": "Remove a gameplay tag.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "tag"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "gameplaytags.add_redirect",
+    "description": "Add a tag redirect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "old_tag": {
+          "type": "string"
+        },
+        "new_tag": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "old_tag",
+        "new_tag"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "gameplaytags.validate_sources",
+    "description": "Validate tag sources.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "dataasset.create_primary",
+    "description": "Create a Primary Data Asset.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "asset_path": {
+          "type": "string"
+        },
+        "asset_name": {
+          "type": "string"
+        },
+        "class_name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "asset_path",
+        "asset_name",
+        "class_name"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "datatable.create_2",
+    "description": "Create a DataTable asset.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "asset_path": {
+          "type": "string"
+        },
+        "asset_name": {
+          "type": "string"
+        },
+        "row_struct": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "asset_path",
+        "asset_name",
+        "row_struct"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "datatable.upsert_row",
+    "description": "Add or update a DataTable row.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "datatable": {
+          "type": "string"
+        },
+        "row_name": {
+          "type": "string"
+        },
+        "row_data": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "datatable",
+        "row_name",
+        "row_data"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "datatable.remove_row_2",
+    "description": "Remove a DataTable row.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "datatable": {
+          "type": "string"
+        },
+        "row_name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "datatable",
+        "row_name"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "datatable.export_csv",
+    "description": "Export DataTable to CSV.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "datatable": {
+          "type": "string"
+        },
+        "output_file": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "datatable",
+        "output_file"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "datatable.import_csv",
+    "description": "Import CSV into DataTable.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "datatable": {
+          "type": "string"
+        },
+        "csv_file": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "datatable",
+        "csv_file"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "_comment": "=== BUILD / COOK / PACKAGE ==="
+  },
+  {
+    "name": "build.set_packaging_settings",
+    "description": "Set key packaging settings.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "build_configuration": {
+          "type": "string",
+          "enum": [
+            "development",
+            "shipping",
+            "test"
+          ],
+          "default": "development"
+        },
+        "use_iostore": {
+          "type": "boolean",
+          "default": true
+        },
+        "pak_compression": {
+          "type": "string",
+          "enum": [
+            "none",
+            "oodle",
+            "zlib"
+          ],
+          "default": "oodle"
+        },
+        "include_prereqs": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "cook.by_the_book",
+    "description": "Cook content for a platform.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "platform": {
+          "type": "string",
+          "enum": [
+            "win64",
+            "linux",
+            "android",
+            "ios",
+            "ps5",
+            "xboxseries",
+            "switch"
+          ]
+        },
+        "maps": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "iterate": {
+          "type": "boolean",
+          "default": true
+        },
+        "cook_all": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "required": [
+        "platform"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "package.project",
+    "description": "Package the project for a platform.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "platform": {
+          "type": "string",
+          "enum": [
+            "win64",
+            "linux",
+            "android",
+            "ios"
+          ]
+        },
+        "configuration": {
+          "type": "string",
+          "enum": [
+            "development",
+            "shipping"
+          ],
+          "default": "shipping"
+        },
+        "archive_dir": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "platform",
+        "archive_dir"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "build.clean_intermediate",
+    "description": "Clean Intermediate/DDC folders.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "clean_ddc": {
+          "type": "boolean",
+          "default": false
+        },
+        "clean_saved": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "build.generate_project_files",
+    "description": "Generate IDE project files.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "ide": {
+          "type": "string",
+          "enum": [
+            "visual_studio",
+            "rider",
+            "xcode"
+          ],
+          "default": "visual_studio"
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "build.compile_editor",
+    "description": "Compile the Editor target.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "configuration": {
+          "type": "string",
+          "enum": [
+            "development",
+            "debug",
+            "shipping"
+          ],
+          "default": "development"
+        },
+        "platform": {
+          "type": "string",
+          "enum": [
+            "win64",
+            "linux",
+            "mac"
+          ],
+          "default": "win64"
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "build.run_buildgraph",
+    "description": "Run a BuildGraph script.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "script": {
+          "type": "string"
+        },
+        "target": {
+          "type": "string"
+        },
+        "set": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "script",
+        "target"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "build.scan_log_errors",
+    "description": "Scan build/cook logs for common errors.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "log_file": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "log_file"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "ddc.warm_cache",
+    "description": "Warm Derived Data Cache.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "asset_paths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "platform": {
+          "type": "string",
+          "enum": [
+            "win64",
+            "android",
+            "ios",
+            "linux"
+          ],
+          "default": "win64"
+        }
+      },
+      "required": [
+        "asset_paths"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "ddc.stats",
+    "description": "Get Derived Data Cache statistics.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "_comment": "=== PROFILING ==="
+  },
+  {
+    "name": "profiling.start_trace",
+    "description": "Start Unreal Insights trace capture.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "channels": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "duration_seconds": {
+          "type": "number",
+          "default": 0.0
+        },
+        "output_file": {
+          "type": "string"
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "profiling.stop_trace",
+    "description": "Stop trace capture.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "profiling.enable_stat_group",
+    "description": "Enable/disable a stat group.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "group": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [
+        "group",
+        "enabled"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "profiling.highres_screenshot",
+    "description": "Capture a high-res screenshot.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "multiplier": {
+          "type": "integer",
+          "default": 1
+        },
+        "file_name": {
+          "type": "string"
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "profiling.gpu_capture",
+    "description": "Capture GPU profile dump.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "frames": {
+          "type": "integer",
+          "default": 1
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "profiling.mem_report",
+    "description": "Generate a memory report.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "full": {
+          "type": "boolean",
+          "default": false
+        },
+        "output_file": {
+          "type": "string"
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "profiling.force_gc",
+    "description": "Force garbage collection.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "full_purge": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "profiling.set_scalability",
+    "description": "Set scalability preset.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "quality": {
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "epic",
+            "cinematic"
+          ],
+          "default": "high"
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "profiling.set_screen_percentage",
+    "description": "Set r.ScreenPercentage.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "screen_percentage": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "screen_percentage"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "profiling.audit_map",
+    "description": "Run a lightweight map perf audit.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "map_path": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "map_path"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "_comment": "=== SOURCE CONTROL / MULTI-USER ==="
+  },
+  {
+    "name": "sourcecontrol.connect",
+    "description": "Connect to a source control provider.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "provider": {
+          "type": "string",
+          "enum": [
+            "perforce",
+            "git",
+            "plastic"
+          ]
+        },
+        "settings": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "provider",
+        "settings"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "sourcecontrol.status",
+    "description": "Get source control status for paths.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "paths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "paths"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "sourcecontrol.checkout",
+    "description": "Check out files.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "paths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "paths"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "sourcecontrol.submit",
+    "description": "Submit changelist/commit.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "paths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "description"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "sourcecontrol.revert",
+    "description": "Revert files.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "paths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unchanged_only": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "required": [
+        "paths"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "sourcecontrol.create_changelist",
+    "description": "Create a changelist.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "description"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "sourcecontrol.add_files",
+    "description": "Add new files.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "paths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "paths"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "multiuser.start_server",
+    "description": "Start Multi-User server.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "project_name": {
+          "type": "string"
+        },
+        "port": {
+          "type": "integer",
+          "default": 6666
+        }
+      },
+      "required": [
+        "project_name"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "multiuser.join_session",
+    "description": "Join a Multi-User session.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "server_address": {
+          "type": "string"
+        },
+        "session_name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "server_address",
+        "session_name"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "multiuser.leave_session",
+    "description": "Leave Multi-User session.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "_comment": "=== LOCALIZATION ==="
+  },
+  {
+    "name": "loc.gather_text",
+    "description": "Run localization text gather.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "config": {
+          "type": "string"
+        },
+        "include_editor": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "required": [
+        "config"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "loc.compile_text",
+    "description": "Compile localization resources.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "target": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "target"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "loc.export_po",
+    "description": "Export localization to PO.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "target": {
+          "type": "string"
+        },
+        "output_dir": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "target",
+        "output_dir"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "loc.import_po",
+    "description": "Import PO files.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "target": {
+          "type": "string"
+        },
+        "input_dir": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "target",
+        "input_dir"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "loc.set_culture",
+    "description": "Set current culture for preview.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "culture": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "culture"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "loc.preview_text",
+    "description": "Preview localized text.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "namespace": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        },
+        "culture": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "namespace",
+        "key"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "loc.audit_missing_translations",
+    "description": "Audit missing translations.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "target": {
+          "type": "string"
+        },
+        "culture": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "target",
+        "culture"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "loc.create_string_table",
+    "description": "Create String Table asset.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "asset_path": {
+          "type": "string"
+        },
+        "asset_name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "asset_path",
+        "asset_name"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "loc.string_table_set_entry",
+    "description": "Set String Table entry.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "string_table": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        },
+        "source_string": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "string_table",
+        "key",
+        "source_string"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "loc.string_table_remove_entry",
+    "description": "Remove String Table entry.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "string_table": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "string_table",
+        "key"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "_comment": "=== AUTOMATION / TESTING ==="
+  },
+  {
+    "name": "automation.list_tests",
+    "description": "List automation tests.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "automation.run_tests",
+    "description": "Run automation tests by pattern.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "pattern": {
+          "type": "string"
+        },
+        "report_dir": {
+          "type": "string"
+        },
+        "parallel": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [
+        "pattern",
+        "report_dir"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "automation.stop_tests",
+    "description": "Stop running automation tests.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "functionaltest.spawn",
+    "description": "Spawn a FunctionalTest actor.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "location": {
+          "type": "object",
+          "description": "Vector",
+          "properties": {
+            "x": {
+              "type": "number"
+            },
+            "y": {
+              "type": "number"
+            },
+            "z": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "x",
+            "y",
+            "z"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "location"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "functionaltest.run_all",
+    "description": "Run all FunctionalTests in level.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "stop_on_fail": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "gauntlet.run_suite",
+    "description": "Run a Gauntlet suite.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "suite": {
+          "type": "string"
+        },
+        "platform": {
+          "type": "string",
+          "enum": [
+            "win64",
+            "android",
+            "ios",
+            "linux"
+          ],
+          "default": "win64"
+        },
+        "configuration": {
+          "type": "string",
+          "enum": [
+            "development",
+            "shipping"
+          ],
+          "default": "development"
+        }
+      },
+      "required": [
+        "suite"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "automation.capture_reference_screenshot",
+    "description": "Capture reference screenshot.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "tolerance": {
+          "type": "number",
+          "default": 0.02
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "automation.compare_screenshot",
+    "description": "Compare screenshot to reference.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "tolerance": {
+          "type": "number",
+          "default": 0.02
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "automation.set_test_map",
+    "description": "Set map for automation.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "map_path": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "map_path"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "automation.audit_flaky",
+    "description": "Audit reports for flaky tests.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "report_dir": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "report_dir"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "_comment": "=== AUDIO / SOUND ==="
+  },
+  {
+    "name": "audio.create_sound_cue_2",
+    "description": "Create a Sound Cue asset.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "asset_path": {
+          "type": "string"
+        },
+        "asset_name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "asset_path",
+        "asset_name"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "audio.create_sound_mix",
+    "description": "Create a Sound Mix asset.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "asset_path": {
+          "type": "string"
+        },
+        "asset_name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "asset_path",
+        "asset_name"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "audio.set_sound_class_volume",
+    "description": "Set volume on a SoundClass (editor/runtime).",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "sound_class": {
+          "type": "string"
+        },
+        "volume": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "sound_class",
+        "volume"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "audio.set_sound_class_pitch",
+    "description": "Set pitch on a SoundClass.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "sound_class": {
+          "type": "string"
+        },
+        "pitch": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "sound_class",
+        "pitch"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "audio.apply_sound_mix",
+    "description": "Apply a Sound Mix at runtime.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "sound_mix": {
+          "type": "string"
+        },
+        "fade_time": {
+          "type": "number",
+          "default": 0.5
+        }
+      },
+      "required": [
+        "sound_mix"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "audio.clear_sound_mix",
+    "description": "Clear a Sound Mix at runtime.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "sound_mix": {
+          "type": "string"
+        },
+        "fade_time": {
+          "type": "number",
+          "default": 0.5
+        }
+      },
+      "required": [
+        "sound_mix"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "audio.spawn_2d_sound",
+    "description": "Play a 2D sound at runtime.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "sound": {
+          "type": "string"
+        },
+        "volume": {
+          "type": "number",
+          "default": 1.0
+        },
+        "pitch": {
+          "type": "number",
+          "default": 1.0
+        }
+      },
+      "required": [
+        "sound"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "audio.spawn_at_location",
+    "description": "Play a 3D sound at runtime.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "sound": {
+          "type": "string"
+        },
+        "location": {
+          "type": "object",
+          "description": "Vector",
+          "properties": {
+            "x": {
+              "type": "number"
+            },
+            "y": {
+              "type": "number"
+            },
+            "z": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "x",
+            "y",
+            "z"
+          ],
+          "additionalProperties": false
+        },
+        "volume": {
+          "type": "number",
+          "default": 1.0
+        },
+        "pitch": {
+          "type": "number",
+          "default": 1.0
+        }
+      },
+      "required": [
+        "sound",
+        "location"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "audio.set_submix_effect_chain",
+    "description": "Set submix effect chain.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "submix": {
+          "type": "string"
+        },
+        "effects": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "submix",
+        "effects"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "audio.audit_assets",
+    "description": "Audit audio assets for missing refs and loudness hints.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "root_path": {
+          "type": "string",
+          "default": "/Game"
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "_comment": "=== NETWORKING / REPLICATION ==="
+  },
+  {
+    "name": "net.set_packet_loss",
+    "description": "Simulate packet loss in PIE.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "percent": {
+          "type": "number",
+          "description": "0-100"
+        }
+      },
+      "required": [
+        "percent"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "net.set_packet_lag",
+    "description": "Simulate packet lag in PIE.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "ms": {
+          "type": "integer",
+          "description": "One-way latency in ms"
+        }
+      },
+      "required": [
+        "ms"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "net.set_packet_jitter",
+    "description": "Simulate packet jitter in PIE.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "ms": {
+          "type": "integer",
+          "description": "Jitter in ms"
+        }
+      },
+      "required": [
+        "ms"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "net.open_listen_server",
+    "description": "Open a listen server map.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "map_path": {
+          "type": "string"
+        },
+        "port": {
+          "type": "integer",
+          "default": 7777
+        }
+      },
+      "required": [
+        "map_path"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "net.open_client",
+    "description": "Connect client to server.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string",
+          "description": "ip:port or URL"
+        }
+      },
+      "required": [
+        "address"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "net.set_net_update_rate",
+    "description": "Set NetUpdateFrequency for an actor.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "actor": {
+          "type": "string"
+        },
+        "net_update_frequency": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "actor",
+        "net_update_frequency"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "net.set_replicates",
+    "description": "Toggle bReplicates for an actor.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "actor": {
+          "type": "string"
+        },
+        "replicates": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "actor",
+        "replicates"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "net.flush_net_dormancy",
+    "description": "Flush dormancy for an actor.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "actor": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "actor"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "net.audit_replication",
+    "description": "Audit actors replication settings in current world.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "net.dump_net_graph",
+    "description": "Dump network graph stats (net pkt, bunches).",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "duration_seconds": {
+          "type": "number",
+          "default": 5.0
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "_comment": "=== RENDERING / POST PROCESS ==="
+  },
+  {
+    "name": "render.set_view_distance_scale",
+    "description": "Set r.ViewDistanceScale.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "scale": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "scale"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "render.set_shadow_quality",
+    "description": "Set shadow quality cvars bucket.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "quality": {
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "epic"
+          ],
+          "default": "high"
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "render.set_lumen_enabled",
+    "description": "Enable/disable Lumen (if supported).",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "enabled"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "render.set_nanite_enabled",
+    "description": "Enable/disable Nanite rendering (project/runtime cvar).",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "enabled"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "render.set_virtual_shadow_maps",
+    "description": "Enable/disable virtual shadow maps.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "enabled"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "render.set_taa_quality",
+    "description": "Set TAA quality.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "quality": {
+          "type": "integer",
+          "description": "0-6"
+        }
+      },
+      "required": [
+        "quality"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "render.set_fsr_mode",
+    "description": "Set upscaling mode (FSR/DLSS/TSR).",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "off",
+            "tsr",
+            "fsr2",
+            "dlss"
+          ],
+          "default": "tsr"
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "render.set_post_process_volume_settings",
+    "description": "Set basic PostProcessVolume overrides.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "volume": {
+          "type": "string"
+        },
+        "settings": {
+          "type": "object",
+          "description": "PP settings map (e.g. BloomIntensity, VignetteIntensity)."
+        }
+      },
+      "required": [
+        "volume",
+        "settings"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "render.capture_scene_to_render_target",
+    "description": "Capture scene to a render target from a camera.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "camera_actor": {
+          "type": "string"
+        },
+        "render_target": {
+          "type": "string"
+        },
+        "show_only_actors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "camera_actor",
+        "render_target"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "render.audit_gpu_budget",
+    "description": "Estimate GPU budget risk (nanite, shadows, lumen, virtual textures).",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "_comment": "=== LANDSCAPE / FOLIAGE ==="
+  },
+  {
+    "name": "landscape.create",
+    "description": "Create a Landscape actor in the level.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "section_size": {
+          "type": "integer",
+          "enum": [
+            63,
+            127,
+            255
+          ],
+          "default": 127
+        },
+        "sections_per_component": {
+          "type": "integer",
+          "enum": [
+            1,
+            2
+          ],
+          "default": 1
+        },
+        "component_count_x": {
+          "type": "integer"
+        },
+        "component_count_y": {
+          "type": "integer"
+        },
+        "material": {
+          "type": "string"
+        },
+        "location": {
+          "type": "object",
+          "description": "Vector",
+          "properties": {
+            "x": {
+              "type": "number"
+            },
+            "y": {
+              "type": "number"
+            },
+            "z": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "x",
+            "y",
+            "z"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "component_count_x",
+        "component_count_y"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "landscape.import_heightmap",
+    "description": "Import heightmap to Landscape.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "landscape": {
+          "type": "string"
+        },
+        "heightmap_file": {
+          "type": "string"
+        },
+        "z_scale": {
+          "type": "number",
+          "default": 100.0
+        }
+      },
+      "required": [
+        "landscape",
+        "heightmap_file"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "landscape.set_material",
+    "description": "Assign material to Landscape.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "landscape": {
+          "type": "string"
+        },
+        "material": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "landscape",
+        "material"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "landscape.rebuild_collision",
+    "description": "Rebuild Landscape collision.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "landscape": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "landscape"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "landscape.create_layer_info",
+    "description": "Create LandscapeLayerInfo asset.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "asset_path": {
+          "type": "string"
+        },
+        "asset_name": {
+          "type": "string"
+        },
+        "phys_material": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "asset_path",
+        "asset_name"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "foliage.add_type",
+    "description": "Add a foliage type to foliage tool.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "foliage_type": {
+          "type": "string",
+          "description": "FoliageType asset path"
+        }
+      },
+      "required": [
+        "foliage_type"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "foliage.paint",
+    "description": "Procedurally paint foliage within a volume (editor).",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "foliage_type": {
+          "type": "string"
+        },
+        "volume": {
+          "type": "string"
+        },
+        "density": {
+          "type": "number",
+          "default": 1.0
+        }
+      },
+      "required": [
+        "foliage_type",
+        "volume"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "foliage.clear_in_volume",
+    "description": "Remove foliage instances inside a volume.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "volume": {
+          "type": "string"
+        },
+        "foliage_type": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "volume"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "foliage.audit_instances",
+    "description": "Audit foliage instance counts and overdraw risk.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "landscape.audit",
+    "description": "Audit landscape components, LODs, and memory.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "landscape": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "landscape"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "_comment": "=== PHYSICS / CHAOS ==="
+  },
+  {
+    "name": "physics.set_world_gravity",
+    "description": "Set world gravity (runtime).",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "gravity_z": {
+          "type": "number",
+          "description": "cm/s^2 (negative is down)"
+        }
+      },
+      "required": [
+        "gravity_z"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "physics.enable_substepping",
+    "description": "Enable/disable physics substepping.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "max_substep_delta_time": {
+          "type": "number",
+          "default": 0.016
+        },
+        "max_substeps": {
+          "type": "integer",
+          "default": 6
+        }
+      },
+      "required": [
+        "enabled"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "physics.set_ragdoll",
+    "description": "Enable ragdoll on a skeletal mesh component.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "actor": {
+          "type": "string"
+        },
+        "mesh_component": {
+          "type": "string",
+          "default": "Mesh"
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [
+        "actor",
+        "enabled"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "physics.apply_impulse",
+    "description": "Apply impulse to an actor or component.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "actor": {
+          "type": "string"
+        },
+        "impulse": {
+          "type": "object",
+          "description": "Impulse (N*s)",
+          "properties": {
+            "x": {
+              "type": "number"
+            },
+            "y": {
+              "type": "number"
+            },
+            "z": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "x",
+            "y",
+            "z"
+          ],
+          "additionalProperties": false
+        },
+        "bone_name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "actor",
+        "impulse"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "physics.apply_force",
+    "description": "Apply force to an actor or component.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "actor": {
+          "type": "string"
+        },
+        "force": {
+          "type": "object",
+          "description": "Force (N)",
+          "properties": {
+            "x": {
+              "type": "number"
+            },
+            "y": {
+              "type": "number"
+            },
+            "z": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "x",
+            "y",
+            "z"
+          ],
+          "additionalProperties": false
+        },
+        "bone_name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "actor",
+        "force"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "physics.set_linear_damping",
+    "description": "Set linear damping on primitive component.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "actor": {
+          "type": "string"
+        },
+        "component": {
+          "type": "string",
+          "default": "Root"
+        },
+        "damping": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "actor",
+        "damping"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "physics.set_angular_damping",
+    "description": "Set angular damping on primitive component.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "actor": {
+          "type": "string"
+        },
+        "component": {
+          "type": "string",
+          "default": "Root"
+        },
+        "damping": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "actor",
+        "damping"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "physics.set_constraint_profile",
+    "description": "Set physics constraint profile on a constraint component.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "actor": {
+          "type": "string"
+        },
+        "constraint_component": {
+          "type": "string"
+        },
+        "profile_name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "actor",
+        "constraint_component",
+        "profile_name"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "chaos.audit_simulation",
+    "description": "Audit Chaos settings (solver, sleep thresholds) for stability.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "physics.debug_draw_collision",
+    "description": "Toggle collision debug drawing.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "enabled"
+      ],
+      "additionalProperties": false
+    }
+  }
+]
