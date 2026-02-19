@@ -514,4 +514,4 @@ Add an API key check in `server.py` before the `combined_app` dispatcher, or use
 
 ---
 
-*HopStackMCP — part of the [Hyper Game Framework](https://github.com/TaimoorSiddiquiOfficial/HopStackAI) by Hop Trendy*
+ by Hop Trendy*
