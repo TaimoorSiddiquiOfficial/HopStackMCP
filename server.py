@@ -1,6 +1,6 @@
 """
 HopStack UE Tools — FastMCP Server
-Publishes ~684 Unreal Engine tools from JSON definitions via MCP over HTTP.
+Publishes ~638 Unreal Engine tools from JSON definitions via MCP over HTTP.
 Designed for Railway deployment.
 """
 
@@ -225,4 +225,4 @@ if __name__ == "__main__":
     print(f"[INFO]   MCP endpoint : /mcp")
     print(f"[INFO]   Tools JSON   : /tools.json")
     print(f"[INFO]   Health check : /health")
-    uvicorn.run(combined_app, host="0.0.0.0", port=port)
+    uvicorn.run(combined_app, host="0.0.0.0", port=port, ws="wsproto")
