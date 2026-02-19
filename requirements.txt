@@ -1,3 +1,4 @@
 fastmcp[http]>=2.0.0,<3.0.0
+cyclopts>=5.0.0a1
 uvicorn>=0.30.0,<1.0.0
 wsproto>=1.2.0,<2.0.0
