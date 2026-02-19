@@ -12,6 +12,10 @@ COPY server.py .
 # Copy JSON tool definitions into data/
 COPY data/ data/
 
+# Run as non-root for security hardening
+RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
+USER appuser
+
 # Railway injects PORT env var
 ENV PORT=8000
 
