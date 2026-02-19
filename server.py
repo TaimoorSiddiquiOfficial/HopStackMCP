@@ -501,14 +501,29 @@ async def combined_app(scope, receive, send):
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
+    import sys
     import uvicorn
 
-    port = int(os.environ.get("PORT", 8000))
-    print(f"[INFO] Starting HopStackMCP server (Meta-Tools Mode) on 0.0.0.0:{port}")
-    print(f"[INFO]   MCP endpoint    : /mcp (3 meta-tools)")
-    print(f"[INFO]   Tools JSON      : /tools.json")
-    print(f"[INFO]   Tool Schema     : /tool/{{name}}/schema")
-    print(f"[INFO]   Categories      : /categories")
-    print(f"[INFO]   Health check    : /health")
-    print(f"[INFO]   UE Plugin URL   : {UE_PLUGIN_MCP_URL}")
-    uvicorn.run(combined_app, host="0.0.0.0", port=port, ws="wsproto")
+    # Check if running in stdio mode (for MCP clients like HopCoderX)
+    # When spawned by an MCP client, stdin is connected to a pipe
+    if not sys.stdin.isatty():
+        # Running via MCP client (stdio mode)
+        print(
+            "[INFO] Starting HopStackMCP in stdio mode (MCP client detected)",
+            file=sys.stderr,
+        )
+        print(f"[INFO]   Registered tools: 3 meta-tools", file=sys.stderr)
+        print(f"[INFO]   Available UE tools: {len(load_tools())}", file=sys.stderr)
+        # FastMCP's run() method handles stdio transport
+        mcp.run()
+    else:
+        # Running directly (HTTP mode for development/Railway)
+        port = int(os.environ.get("PORT", 8000))
+        print(f"[INFO] Starting HopStackMCP server (Meta-Tools Mode) on 0.0.0.0:{port}")
+        print(f"[INFO]   MCP endpoint    : /mcp (3 meta-tools)")
+        print(f"[INFO]   Tools JSON      : /tools.json")
+        print(f"[INFO]   Tool Schema     : /tool/{{name}}/schema")
+        print(f"[INFO]   Categories      : /categories")
+        print(f"[INFO]   Health check    : /health")
+        print(f"[INFO]   UE Plugin URL   : {UE_PLUGIN_MCP_URL}")
+        uvicorn.run(combined_app, host="0.0.0.0", port=port, ws="wsproto")
