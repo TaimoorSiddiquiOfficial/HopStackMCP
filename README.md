@@ -1,11 +1,72 @@
-# HopStackMCP
-
-**Cloud MCP schema-discovery server for the HopStack / Hyper Game Framework.**  
-Exposes **638 Unreal Engine 5 tool definitions** over the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) via HTTP, enabling any MCP-compatible AI agent (Claude, GitHub Copilot, Cursor, etc.) to discover and understand UE5 tooling.
+# Deploy and Host HopStackMCP For Unreal Engine on Railway
 
 [![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/i7I5Gr?referralCode=R7omnS&utm_medium=integration&utm_source=template&utm_campaign=generic)
 
+HopStackMCP is a cloud MCP schema-discovery server that exposes **638 Unreal Engine 5 tool definitions** over the [Model Context Protocol](https://modelcontextprotocol.io/). It lets AI agents like Claude, GitHub Copilot, and Cursor discover the full UE5 editor API and parameter schemas — bridging cloud AI tooling with local execution inside the Unreal Engine editor via the AgentIntegrationKit plugin.
+
+## About Hosting HopStackMCP For Unreal Engine
+
+Hosting HopStackMCP on Railway deploys a FastMCP Python server that publishes 638 Unreal Engine tool schemas as a live MCP endpoint. Railway builds the included Dockerfile (Python 3.12-slim, non-root container), injects the `PORT` environment variable, and provides a public HTTPS URL automatically. The server is entirely stateless — it loads tool definitions once from bundled JSON files, caches them in memory, and serves them to any MCP-compatible client. No database, storage volume, or external service is required. One Railway service instance handles production traffic comfortably. Updating tool definitions is as simple as pushing new JSON to the repository; Railway redeploys within seconds.
+
+## Common Use Cases
+
+- **AI-assisted UE5 development** — Connect Claude, GitHub Copilot, or Cursor to the MCP endpoint so they can discover all 638 Unreal Engine tool schemas and intelligently guide editor operations without requiring a running Unreal Editor instance.
+- **Plugin tool registry sync** — The AgentIntegrationKit UE5 plugin fetches `/tools.json` at editor startup to populate its local tool registry from this cloud endpoint, keeping every developer's toolset in sync with the latest definitions automatically.
+- **CI / headless pipelines** — Provide AI automation scripts with a stable MCP endpoint to query tool signatures and parameter schemas during automated build or testing pipelines, where no local editor is available.
+
+## Dependencies for HopStackMCP For Unreal Engine Hosting
+
+- **Python 3.12** — Runtime for the FastMCP server
+- **fastmcp[http] ≥ 2.0** — MCP server framework providing the `/mcp` Streamable HTTP transport
+- **uvicorn ≥ 0.30 + wsproto ≥ 1.2** — ASGI production server (wsproto replaces the deprecated websockets legacy backend)
+
+### Deployment Dependencies
+
+- [FastMCP](https://github.com/jlowin/fastmcp) — Python MCP server framework
+- [Railway Dockerfile deployments](https://docs.railway.com/guides/dockerfiles) — Railway builds and runs the included `Dockerfile` automatically
+- [Model Context Protocol specification](https://modelcontextprotocol.io/specification) — Protocol this server implements (spec version `2025-03-26`)
+- [AgentIntegrationKit plugin](https://github.com/TaimoorSiddiquiOfficial/HopStackAI) — The UE5 plugin that consumes this server's tool definitions for in-editor execution
+
+### Implementation Details
+
+The server dynamically registers each tool from JSON at startup using FastMCP's `mcp.tool()` decorator, building a proper Python function signature and type annotations so MCP clients receive full schema introspection:
+
+```python
+# Each tool from JSON becomes a live MCP-registered handler
+async def handler(**kwargs) -> dict:
+    return {
+        "tool": name,
+        "status": "dispatched",
+        "note": "Execution performed inside Unreal Engine via AgentIntegrationKit plugin."
+    }
+
+mcp.tool(name="chaos.create_field")(handler)
+```
+
+Three endpoints are served from a single ASGI app:
+
+```
+POST/GET  /mcp         # MCP protocol (Streamable HTTP, spec 2025-03-26)
+GET       /tools.json  # Raw JSON array consumed by the UE5 plugin
+GET       /health      # {"status":"ok","tools":638}
+```
+
+To override the tool server URL in the UE5 plugin, set in `Config/DefaultAgentIntegrationKit.ini`:
+
+```ini
+[/Script/AgentIntegrationKit.ACPSettings]
+RemoteToolsUrl=https://YOUR_RAILWAY_APP.up.railway.app/tools.json
+```
+
+## Why Deploy HopStackMCP For Unreal Engine on Railway?
+
+Railway is a singular platform to deploy your infrastructure stack. Railway will host your infrastructure so you don't have to deal with configuration, while allowing you to vertically and horizontally scale it.
+
+By deploying HopStackMCP For Unreal Engine on Railway, you are one step closer to supporting a complete full-stack application with minimal burden. Host your servers, databases, AI agents, and more on Railway.
+
 ---
+
+# HopStackMCP — Full Documentation
 
 ## Table of Contents
 
