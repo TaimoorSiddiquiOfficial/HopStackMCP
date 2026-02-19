@@ -2,7 +2,7 @@
 
 [![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/i7I5Gr?referralCode=R7omnS&utm_medium=integration&utm_source=template&utm_campaign=generic)
 
-HopStackMCP is a cloud MCP schema-discovery server that exposes **638 Unreal Engine 5 tool definitions** over the [Model Context Protocol](https://modelcontextprotocol.io/). It lets AI agents like Claude, GitHub Copilot, and Cursor discover the full UE5 editor API and parameter schemas — bridging cloud AI tooling with local execution inside the Unreal Engine editor via the AgentIntegrationKit plugin.
+HopStackMCP is a cloud MCP schema-discovery server that exposes **638 Unreal Engine 5 tool definitions** over the [Model Context Protocol](https://modelcontextprotocol.io/). It lets AI agents like Claude, GitHub Copilot, and Cursor discover the full UE5 editor API and parameter schemas — enabling intelligent AI-assisted Unreal Engine development through a live, self-hosted MCP endpoint.
 
 ## About Hosting HopStackMCP For Unreal Engine
 
@@ -10,14 +10,14 @@ Hosting HopStackMCP on Railway deploys a FastMCP Python server that publishes 63
 
 ## Common Use Cases
 
-- **AI-assisted UE5 development** — Connect Claude, GitHub Copilot, or Cursor to the MCP endpoint so they can discover all 638 Unreal Engine tool schemas and intelligently guide editor operations without requiring a running Unreal Editor instance.
-- **Plugin tool registry sync** — The AgentIntegrationKit UE5 plugin fetches `/tools.json` at editor startup to populate its local tool registry from this cloud endpoint, keeping every developer's toolset in sync with the latest definitions automatically.
-- **CI / headless pipelines** — Provide AI automation scripts with a stable MCP endpoint to query tool signatures and parameter schemas during automated build or testing pipelines, where no local editor is available.
+- **AI-assisted UE5 development** — Connect Claude, GitHub Copilot, or Cursor to your MCP endpoint so they can discover all 638 Unreal Engine tool schemas and intelligently guide editor operations.
+- **Headless / CI pipelines** — Provide AI automation scripts with a stable MCP endpoint to query tool signatures and parameter schemas during automated build or testing pipelines, where no local editor is available.
+- **Custom tool integrations** — Fetch `/tools.json` from any client to receive the full machine-readable tool definition array for downstream processing or registry population.
 
 ## Dependencies for HopStackMCP For Unreal Engine Hosting
 
 - **Python 3.12** — Runtime for the FastMCP server
-- **fastmcp[http] ≥ 2.0** — MCP server framework providing the `/mcp` Streamable HTTP transport
+- **fastmcp[http] ≥ 3.0** — MCP server framework providing the `/mcp` Streamable HTTP transport
 - **uvicorn ≥ 0.30 + wsproto ≥ 1.2** — ASGI production server (wsproto replaces the deprecated websockets legacy backend)
 
 ### Deployment Dependencies
@@ -25,7 +25,6 @@ Hosting HopStackMCP on Railway deploys a FastMCP Python server that publishes 63
 - [FastMCP](https://github.com/jlowin/fastmcp) — Python MCP server framework
 - [Railway Dockerfile deployments](https://docs.railway.com/guides/dockerfiles) — Railway builds and runs the included `Dockerfile` automatically
 - [Model Context Protocol specification](https://modelcontextprotocol.io/specification) — Protocol this server implements (spec version `2025-03-26`)
-- [AgentIntegrationKit plugin](https://github.com/TaimoorSiddiquiOfficial/HopStackAI) — The UE5 plugin that consumes this server's tool definitions for in-editor execution
 
 ### Implementation Details
 
@@ -37,7 +36,7 @@ async def handler(**kwargs) -> dict:
     return {
         "tool": name,
         "status": "dispatched",
-        "note": "Execution performed inside Unreal Engine via AgentIntegrationKit plugin."
+        "note": "Tool schema served. Execution is handled by your local integration."
     }
 
 mcp.tool(name="chaos.create_field")(handler)
@@ -47,15 +46,8 @@ Three endpoints are served from a single ASGI app:
 
 ```
 POST/GET  /mcp         # MCP protocol (Streamable HTTP, spec 2025-03-26)
-GET       /tools.json  # Raw JSON array consumed by the UE5 plugin
+GET       /tools.json  # Raw JSON array of all tool definitions
 GET       /health      # {"status":"ok","tools":638}
-```
-
-To override the tool server URL in the UE5 plugin, set in `Config/DefaultAgentIntegrationKit.ini`:
-
-```ini
-[/Script/AgentIntegrationKit.ACPSettings]
-RemoteToolsUrl=https://YOUR_RAILWAY_APP.up.railway.app/tools.json
 ```
 
 ## Why Deploy HopStackMCP For Unreal Engine on Railway?
@@ -86,28 +78,24 @@ By deploying HopStackMCP For Unreal Engine on Railway, you are one step closer t
 - [Environment Variables](#environment-variables)
 - [Tool Categories](#tool-categories)
 - [Adding or Updating Tools](#adding-or-updating-tools)
-- [Plugin Integration (UE5)](#plugin-integration-ue5)
 - [FAQ](#faq)
 
 ---
 
 ## How It Works
 
-HopStackMCP is a **schema-discovery** server — it tells AI agents *what* tools exist and *what parameters they accept*, but the **actual execution always happens inside Unreal Engine** via the [AgentIntegrationKit](https://github.com/TaimoorSiddiquiOfficial/HopStackAI) plugin running on your local machine.
+HopStackMCP is a **schema-discovery** server — it tells AI agents *what* tools exist and *what parameters they accept*. After deploying on Railway you get a personal public HTTPS URL. Point any MCP-compatible client at `/mcp` and the full 638-tool schema is immediately available for AI-assisted development workflows.
 
 ```
 AI Agent (Claude / Copilot / Cursor)
         │
         │  MCP over HTTP  (schema discovery + tool descriptions)
         ▼
-  hopstackmcp.up.railway.app   ← this server
+  YOUR_RAILWAY_APP.up.railway.app   ← your deployed instance
         │
-        │  tool call relayed to local UE5 instance
+        │  /tools.json  (machine-readable tool definitions)
         ▼
-  AgentIntegrationKit Plugin (port 9315, running inside UE5 Editor)
-        │
-        ▼
-  Actual execution in Unreal Engine
+  Any downstream integration or local execution environment
 ```
 
 When an agent calls a tool, this server responds with:
@@ -116,11 +104,9 @@ When an agent calls a tool, this server responds with:
 {
   "tool": "chaos.create_field",
   "status": "dispatched",
-  "note": "Actual execution is performed inside Unreal Engine via the AgentIntegrationKit plugin."
+  "note": "Tool schema served. Execution is handled by your local integration."
 }
 ```
-
-The AgentIntegrationKit plugin on your local machine handles the real execution against the editor.
 
 ---
 
@@ -130,8 +116,6 @@ The AgentIntegrationKit plugin on your local machine handles the real execution 
 |---|---|---|
 | `server.py` | This repo (Railway) | FastMCP HTTP server — schema discovery, `/tools.json`, `/health` |
 | `data/*.json` | This repo | 638 tool definitions with full JSON input schemas |
-| AgentIntegrationKit | UE5 plugin (local) | Actual tool execution engine, port 9315 |
-| `.vscode/mcp.json` | Local workspace | Wires the AI agent to both endpoints |
 
 ---
 
@@ -140,7 +124,7 @@ The AgentIntegrationKit plugin on your local machine handles the real execution 
 | Method | Path | Description |
 |---|---|---|
 | `POST` / `GET` | `/mcp` | MCP protocol endpoint (Streamable HTTP, spec 2025-03-26) |
-| `GET` | `/tools.json` | Raw JSON array of all 638 tool definitions — consumed by the UE plugin |
+| `GET` | `/tools.json` | Raw JSON array of all 638 tool definitions |
 | `GET` | `/health` | Lightweight health check, returns `{"status":"ok","tools":638}` |
 
 ### MCP Protocol Details
@@ -153,11 +137,13 @@ The AgentIntegrationKit plugin on your local machine handles the real execution 
 
 ## Quickstart — Connect an AI Agent
 
-The server is already deployed at:
+After deploying, your server URL will be:
 
 ```
-https://hopstackmcp.up.railway.app
+https://YOUR_RAILWAY_APP.up.railway.app
 ```
+
+Replace `YOUR_RAILWAY_APP` with the subdomain Railway assigns to your deployment.
 
 ### Claude Desktop
 
@@ -167,7 +153,7 @@ Edit `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) o
 {
   "mcpServers": {
     "HopStackMCP": {
-      "url": "https://hopstackmcp.up.railway.app/mcp",
+      "url": "https://YOUR_RAILWAY_APP.up.railway.app/mcp",
       "transport": "http"
     }
   }
@@ -187,7 +173,7 @@ Add to your workspace `.vscode/mcp.json` (or user-level `settings.json`):
   "servers": {
     "HopStackMCP": {
       "type": "http",
-      "url": "https://hopstackmcp.up.railway.app/mcp"
+      "url": "https://YOUR_RAILWAY_APP.up.railway.app/mcp"
     }
   }
 }
@@ -205,7 +191,7 @@ Open **Cursor Settings → MCP** and add a new server:
 |---|---|
 | Name | `HopStackMCP` |
 | Type | `HTTP` |
-| URL | `https://hopstackmcp.up.railway.app/mcp` |
+| URL | `https://YOUR_RAILWAY_APP.up.railway.app/mcp` |
 
 Or add to `~/.cursor/mcp.json`:
 
@@ -213,7 +199,7 @@ Or add to `~/.cursor/mcp.json`:
 {
   "mcpServers": {
     "HopStackMCP": {
-      "url": "https://hopstackmcp.up.railway.app/mcp",
+      "url": "https://YOUR_RAILWAY_APP.up.railway.app/mcp",
       "transport": "streamable-http"
     }
   }
@@ -225,7 +211,7 @@ Or add to `~/.cursor/mcp.json`:
 ### Codex CLI
 
 ```bash
-codex --mcp-server "https://hopstackmcp.up.railway.app/mcp"
+codex --mcp-server "https://YOUR_RAILWAY_APP.up.railway.app/mcp"
 ```
 
 Or add to `~/.codex/config.toml`:
@@ -233,7 +219,7 @@ Or add to `~/.codex/config.toml`:
 ```toml
 [[mcp_servers]]
 name = "HopStackMCP"
-url  = "https://hopstackmcp.up.railway.app/mcp"
+url  = "https://YOUR_RAILWAY_APP.up.railway.app/mcp"
 ```
 
 ---
@@ -249,11 +235,7 @@ Click the button at the top of this README. Railway will:
 3. Inject a `PORT` env var and start the server
 4. Give you a public HTTPS URL
 
-> **Note:** Replace the `RemoteToolsUrl` in your UE5 project's `Config/DefaultAgentIntegrationKit.ini` with your new Railway URL `/tools.json`:
-> ```ini
-> [/Script/AgentIntegrationKit.ACPSettings]
-> RemoteToolsUrl=https://YOUR_APP.up.railway.app/tools.json
-> ```
+Use that URL wherever the examples above show `YOUR_RAILWAY_APP.up.railway.app`.
 
 ---
 
@@ -434,59 +416,10 @@ Railway auto-deploys on push to `main`.
 
 ---
 
-## Plugin Integration (UE5)
-
-This server is the cloud counterpart to the **AgentIntegrationKit** plugin. The plugin:
-
-1. At startup, fetches `https://hopstackmcp.up.railway.app/tools.json`
-2. Registers all 638 JSON-driven tools into its local tool registry
-3. When an agent calls one of those tools, the plugin executes it inside the UE5 editor
-
-To point the plugin at a custom server URL, set `RemoteToolsUrl` in:
-
-```
-Config/DefaultAgentIntegrationKit.ini
-```
-
-```ini
-[/Script/AgentIntegrationKit.ACPSettings]
-RemoteToolsUrl=https://hopstackmcp.up.railway.app/tools.json
-```
-
-Leave it empty to use the default URL above.
-
-**Plugin local MCP server** runs at `http://localhost:9315/mcp` (requires UE5 editor open).  
-**This cloud server** provides schema discovery only — no editor connection required.
-
-A typical `.vscode/mcp.json` wires both:
-
-```json
-{
-  "servers": {
-    "HopStackMCP": {
-      "type": "http",
-      "url": "https://hopstackmcp.up.railway.app/mcp"
-    },
-    "HopStackLocal": {
-      "type": "http",
-      "url": "http://localhost:9315/mcp"
-    }
-  }
-}
-```
-
-Use **HopStackMCP** (cloud) for tool discovery and schema introspection.  
-Use **HopStackLocal** (localhost) for real execution against the running UE5 editor.
-
----
-
 ## FAQ
 
 **Q: Does this server execute code in my Unreal project?**  
-No. All tool calls to this cloud server return `"status": "dispatched"`. Actual execution requires the AgentIntegrationKit plugin running inside the UE5 editor on your local machine.
-
-**Q: Why do I need the cloud server if I have the local plugin?**  
-The cloud server lets AI agents (Claude, Copilot, etc.) discover the full 638-tool schema without a running UE5 editor. It's also used for cross-machine schema sync and for AI agents operating in CI/headless environments.
+No. All tool calls to this cloud server return `"status": "dispatched"`. This server provides schema discovery only. Actual execution is handled by whatever local integration you configure on your machine.
 
 **Q: How do I update the tool definitions?**  
 Edit the JSON files in `data/`, commit, and push to `main`. Railway deploys automatically within ~1 minute.
@@ -507,11 +440,11 @@ Add an API key check in `server.py` before the `combined_app` dispatcher, or use
 | | |
 |---|---|
 | Runtime | Python 3.12 |
-| MCP framework | [FastMCP](https://github.com/jlowin/fastmcp) ≥ 2.0 |
+| MCP framework | [FastMCP](https://github.com/jlowin/fastmcp) ≥ 3.0 |
 | HTTP server | [Uvicorn](https://www.uvicorn.org/) + wsproto |
 | Deployment | [Railway](https://railway.com) |
 | Container | Docker (python:3.12-slim, non-root) |
 
 ---
 
- by Hop Trendy*
+*HopStackMCP — Unreal Engine 5 tool schema server by Hop Trendy*
